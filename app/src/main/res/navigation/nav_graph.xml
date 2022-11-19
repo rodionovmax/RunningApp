@@ -3,26 +3,26 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/FirstFragment">
+    app:startDestination="@id/StatsFragment">
 
     <fragment
-        android:id="@+id/FirstFragment"
-        android:name="com.rodionovmax.runningapp.FirstFragment"
-        android:label="@string/first_fragment_label"
-        tools:layout="@layout/fragment_first">
+        android:id="@+id/StatsFragment"
+        android:name="com.rodionovmax.runningapp.ui.run.RunFragment"
+        android:label="1"
+        tools:layout="@layout/fragment_run">
 
         <action
             android:id="@+id/action_FirstFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
+            app:destination="@id/RunFragment" />
     </fragment>
     <fragment
-        android:id="@+id/SecondFragment"
-        android:name="com.rodionovmax.runningapp.SecondFragment"
-        android:label="@string/second_fragment_label"
-        tools:layout="@layout/fragment_second">
+        android:id="@+id/RunFragment"
+        android:name="com.rodionovmax.runningapp.ui.stats.StatisticsFragment"
+        android:label="2"
+        tools:layout="@layout/fragment_statistics">
 
         <action
             android:id="@+id/action_SecondFragment_to_FirstFragment"
-            app:destination="@id/FirstFragment" />
+            app:destination="@id/StatsFragment" />
     </fragment>
 </navigation>
