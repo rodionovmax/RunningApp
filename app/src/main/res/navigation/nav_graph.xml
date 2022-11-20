@@ -3,26 +3,42 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/StatsFragment">
-
+    app:startDestination="@id/setupFragment">
     <fragment
-        android:id="@+id/StatsFragment"
+        android:id="@+id/runFragment"
         android:name="com.rodionovmax.runningapp.ui.run.RunFragment"
-        android:label="1"
-        tools:layout="@layout/fragment_run">
-
+        android:label="fragment_run"
+        tools:layout="@layout/fragment_run" >
         <action
-            android:id="@+id/action_FirstFragment_to_SecondFragment"
-            app:destination="@id/RunFragment" />
+            android:id="@+id/action_runFragment_to_trackingFragment"
+            app:destination="@id/trackingFragment" />
     </fragment>
     <fragment
-        android:id="@+id/RunFragment"
-        android:name="com.rodionovmax.runningapp.ui.stats.StatisticsFragment"
-        android:label="2"
-        tools:layout="@layout/fragment_statistics">
-
+        android:id="@+id/setupFragment"
+        android:name="com.rodionovmax.runningapp.ui.setup.SetupFragment"
+        android:label="fragment_setup"
+        tools:layout="@layout/fragment_setup" >
         <action
-            android:id="@+id/action_SecondFragment_to_FirstFragment"
-            app:destination="@id/StatsFragment" />
+            android:id="@+id/action_setupFragment_to_runFragment"
+            app:destination="@id/runFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/statisticsFragment"
+        android:name="com.rodionovmax.runningapp.ui.stats.StatisticsFragment"
+        android:label="fragment_statistics"
+        tools:layout="@layout/fragment_statistics" />
+    <fragment
+        android:id="@+id/trackingFragment"
+        android:name="com.rodionovmax.runningapp.ui.tracking.TrackingFragment"
+        android:label="fragment_tracking"
+        tools:layout="@layout/fragment_tracking" >
+        <action
+            android:id="@+id/action_trackingFragment_to_runFragment"
+            app:destination="@id/runFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.rodionovmax.runningapp.ui.settings.SettingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" />
 </navigation>
