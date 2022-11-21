@@ -26,12 +26,14 @@ import com.rodionovmax.runningapp.other.Constants.POLYLINE_WIDTH
 import com.rodionovmax.runningapp.other.TrackingUtility
 import com.rodionovmax.runningapp.services.Polyline
 import com.rodionovmax.runningapp.services.TrackingService
+import com.rodionovmax.runningapp.ui.CancelTrackingDialog
 import com.rodionovmax.runningapp.ui.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 import javax.inject.Inject
 import kotlin.math.round
 
+const val CANCEL_TRACKING_DIALOG_TAG = "Cancel Dialog"
 
 @AndroidEntryPoint
 class TrackingFragment : Fragment() {
@@ -67,6 +69,14 @@ class TrackingFragment : Fragment() {
         binding.mapView.onCreate(savedInstanceState)
         binding.btnToggleRun.setOnClickListener {
             toggleRun()
+        }
+        // cancel dialog with screen rotation
+        if (savedInstanceState != null) {
+            val cancelTrackingDialog =
+                parentFragmentManager.findFragmentByTag(CANCEL_TRACKING_DIALOG_TAG) as CancelTrackingDialog?
+            cancelTrackingDialog?.setYesListener {
+                stopRun()
+            }
         }
         binding.btnFinishRun.setOnClickListener {
             zoomToSeeWholeTrack()
@@ -121,7 +131,7 @@ class TrackingFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId) {
+        when (item.itemId) {
             R.id.mi_cancel_tracking -> {
                 showCancelTrackingDialog()
             }
@@ -130,31 +140,25 @@ class TrackingFragment : Fragment() {
     }
 
     private fun showCancelTrackingDialog() {
-        val dialog = MaterialAlertDialogBuilder(requireContext(), R.style.AlertDialogTheme)
-            .setTitle("Cancel the Run?")
-            .setMessage("Are you sure to cancel the current run and delete all its data")
-            .setIcon(R.drawable.ic_delete)
-            .setPositiveButton("Yes") { _, _, ->
+        CancelTrackingDialog().apply {
+            setYesListener {
                 stopRun()
             }
-            .setNegativeButton("No") { dialogInterface, _, ->
-                dialogInterface.cancel()
-            }
-            .create()
-        dialog.show()
+        }.show(parentFragmentManager, CANCEL_TRACKING_DIALOG_TAG)
     }
 
     private fun stopRun() {
+        binding.tvTimer.text = "00:00:00:00"
         sendCommandToService(ACTION_STOP_SERVICE)
         findNavController().navigate(R.id.action_trackingFragment_to_runFragment)
     }
 
     private fun updateTracking(isTracking: Boolean) {
         this.isTracking = isTracking
-        if (!isTracking) {
+        if (!isTracking && curTimeInMillis > 0L) {
             binding.btnToggleRun.text = "Start"
             binding.btnFinishRun.visibility = View.VISIBLE
-        } else {
+        } else if (isTracking) {
             binding.btnToggleRun.text = "Stop"
             menu?.getItem(0)?.isVisible = true
             binding.btnFinishRun.visibility = View.GONE
@@ -195,10 +199,18 @@ class TrackingFragment : Fragment() {
             for (polyline in pathPoints) {
                 distanceInMeters += TrackingUtility.calculatePolylineLength(polyline).toInt()
             }
-            val avgSpeed = round((distanceInMeters / 1000f) / (curTimeInMillis / 1000f / 60 / 60) * 10) / 10f
+            val avgSpeed =
+                round((distanceInMeters / 1000f) / (curTimeInMillis / 1000f / 60 / 60) * 10) / 10f
             val dateTimeStamp = Calendar.getInstance().timeInMillis
             val caloriesBurned = ((distanceInMeters / 1000f) * weight).toInt()
-            val run = RunEntity(bmp, dateTimeStamp, avgSpeed, distanceInMeters, curTimeInMillis, caloriesBurned)
+            val run = RunEntity(
+                bmp,
+                dateTimeStamp,
+                avgSpeed,
+                distanceInMeters,
+                curTimeInMillis,
+                caloriesBurned
+            )
             viewModel.insertRun(run)
             Snackbar.make(
                 requireActivity().findViewById(R.id.rootView),
