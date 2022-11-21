@@ -44,6 +44,8 @@ class MainActivity : AppCompatActivity() {
         val navController = navHostFragment.navController
 
         binding.bottomNavigationView.setupWithNavController(navHostFragment.findNavController())
+        // to fix the bug that fragment reloads when clicking runs nav button
+        binding.bottomNavigationView.setOnNavigationItemReselectedListener { /* NO-OP */ }
 
         navHostFragment.findNavController()
             .addOnDestinationChangedListener { _, destination, _ ->
@@ -70,6 +72,4 @@ class MainActivity : AppCompatActivity() {
             navHostFragment.findNavController().navigate(R.id.action_global_trackingFragment)
         }
     }
-
-
 }
