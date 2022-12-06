@@ -6,4 +6,9 @@
         android:visible="false"
         app:showAsAction="always"
         android:title="Cancel run" />
+    <item android:id="@+id/mi_account"
+        android:icon="@drawable/ic_manage_account_white"
+        android:visible="false"
+        app:showAsAction="always"
+        android:title="Account settings" />
 </menu>

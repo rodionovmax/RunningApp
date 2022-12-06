@@ -2,10 +2,13 @@ package com.rodionovmax.runningapp.ui.settings
 
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.Toast
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textview.MaterialTextView
 import com.rodionovmax.runningapp.R
@@ -13,6 +16,7 @@ import com.rodionovmax.runningapp.databinding.FragmentSettingsBinding
 import com.rodionovmax.runningapp.other.Constants.KEY_NAME
 import com.rodionovmax.runningapp.other.Constants.KEY_WEIGHT
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -21,6 +25,7 @@ class SettingsFragment : Fragment() {
 
     private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!
+    private var myMenu: Menu? = null
 
     @Inject
     lateinit var sharedPreferences: SharedPreferences
@@ -35,6 +40,30 @@ class SettingsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(object: MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.toolbar_menu, menu)
+                myMenu = menu
+            }
+
+            override fun onPrepareMenu(menu: Menu) {
+                super.onPrepareMenu(menu)
+                myMenu?.getItem(1)?.isVisible = true
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.mi_account -> {
+                        findNavController().navigate(R.id.action_settingsFragment_to_accountFragment)
+                        true
+                    }
+                    else -> false
+                }
+            }
+
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
         loadFieldsFromSharedPref()
         binding.btnApplyChanges.setOnClickListener {
@@ -69,6 +98,5 @@ class SettingsFragment : Fragment() {
         toolbar.text = toolbarText
         return true
     }
-
 
 }

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "772635500108",
+    "project_id": "runningapp-c860e",
+    "storage_bucket": "runningapp-c860e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:772635500108:android:128e1384283fc126281ee9",
+        "android_client_info": {
+          "package_name": "com.rodionovmax.runningapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "772635500108-qt5e15qe62fhp0us6reqrrbk6qc0bdhg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rodionovmax.runningapp",
+            "certificate_hash": "900c322436ed455ecb6d3061c1214145fd15cc9a"
+          }
+        },
+        {
+          "client_id": "772635500108-e9o8ab50hemc1odgf46o22544rnvl9cs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhYzZZ6Tul9ri8DtXEanGsHMu4ddaaSRQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "772635500108-e9o8ab50hemc1odgf46o22544rnvl9cs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

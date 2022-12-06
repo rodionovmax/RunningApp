@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import androidx.room.Room
+import com.google.firebase.auth.FirebaseAuth
 import com.rodionovmax.runningapp.db.RunningDatabase
 import com.rodionovmax.runningapp.other.Constants.KEY_FIRST_TIME_TOGGLE
 import com.rodionovmax.runningapp.other.Constants.KEY_NAME
@@ -53,4 +54,8 @@ object AppModule {
     @Provides
     fun provideFirstTimeToggle(sharedPref: SharedPreferences) =
         sharedPref.getBoolean(KEY_FIRST_TIME_TOGGLE, true) ?: true
+
+    @Singleton
+    @Provides
+    fun provideFirebaseAuth() = FirebaseAuth.getInstance()
 }

@@ -3,16 +3,18 @@ package com.rodionovmax.runningapp.ui.tracking
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
+import android.widget.Toast
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.PolylineOptions
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.rodionovmax.runningapp.R
 import com.rodionovmax.runningapp.databinding.FragmentTrackingBinding
@@ -29,6 +31,7 @@ import com.rodionovmax.runningapp.services.TrackingService
 import com.rodionovmax.runningapp.ui.CancelTrackingDialog
 import com.rodionovmax.runningapp.ui.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 import kotlin.math.round
@@ -48,7 +51,7 @@ class TrackingFragment : Fragment() {
 
     private var curTimeInMillis = 0L
 
-    private var menu: Menu? = null
+    private lateinit var myMenu: Menu
 
     @set:Inject
     var weight = 80f
@@ -58,13 +61,37 @@ class TrackingFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentTrackingBinding.inflate(inflater, container, false)
-        setHasOptionsMenu(true)
-
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(object: MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.toolbar_menu, menu)
+                myMenu = menu
+            }
+
+            override fun onPrepareMenu(menu: Menu) {
+                super.onPrepareMenu(menu)
+                if (curTimeInMillis > 0L) {
+                    myMenu.getItem(0)?.isVisible = true
+                }
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.mi_cancel_tracking -> {
+                        showCancelTrackingDialog()
+                        true
+                    }
+                    else -> false
+                }
+            }
+
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
         binding.mapView.onCreate(savedInstanceState)
         binding.btnToggleRun.setOnClickListener {
@@ -110,33 +137,11 @@ class TrackingFragment : Fragment() {
 
     private fun toggleRun() {
         if (isTracking) {
-            menu?.getItem(0)?.isVisible = true
+            myMenu.getItem(0)?.isVisible = true
             sendCommandToService(ACTION_PAUSE_SERVICE)
         } else {
             sendCommandToService(ACTION_START_OR_RESUME_SERVICE)
         }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.toolbar_tracking_menu, menu)
-        this.menu = menu
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-        if (curTimeInMillis > 0L) {
-            this.menu?.getItem(0)?.isVisible = true
-        }
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.mi_cancel_tracking -> {
-                showCancelTrackingDialog()
-            }
-        }
-        return super.onOptionsItemSelected(item)
     }
 
     private fun showCancelTrackingDialog() {
@@ -160,7 +165,7 @@ class TrackingFragment : Fragment() {
             binding.btnFinishRun.visibility = View.VISIBLE
         } else if (isTracking) {
             binding.btnToggleRun.text = "Stop"
-            menu?.getItem(0)?.isVisible = true
+            myMenu.getItem(0)?.isVisible = true
             binding.btnFinishRun.visibility = View.GONE
         }
     }
